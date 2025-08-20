@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="table_view_list" model="ir.ui.view">
+            <field name="name">table_view_list</field>
+            <field name="model">table.tables</field>
+            <field name="arch" type="xml">
+                <list editable="bottom">
+                    <field name="sequence" widget="handle"/>
+                    <field name="table_num"/>
+                    <field name="type_id"/>
+                </list>
+            </field>
+        </record>
+
+
+        <record id="table_num_action" model="ir.actions.act_window">
+            <field name="name">Tables</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">table.tables</field>
+            <field name="view_mode">list</field>
+        </record>
+
+    </data>
+</odoo>

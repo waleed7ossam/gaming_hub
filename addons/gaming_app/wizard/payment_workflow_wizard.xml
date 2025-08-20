@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="payment_workflow_wizard_form_view" model="ir.ui.view">
+        <field name="name">payment_workflow_wizard_form_view</field>
+        <field name="model">payment.workflow.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="payment_way" widget="radio" options="{'horizontal':True}" invisible="is_partially"/>
+                        <field name="is_partially" invisible="True"/>
+                        <field name="paid_amount" invisible="not is_partially"/>
+                    </group>
+                    <group>
+                        <field name="paid_amount" invisible="payment_way != 'partially_paid' or is_partially"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_confirm" string="Confirm" type="object" class="oe_highlight"/>
+                    <button string="Cancel" special="cancel" class="btn-default"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_payment_workflow_wizard" model="ir.actions.act_window">
+        <field name="name">Payment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">payment.workflow.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

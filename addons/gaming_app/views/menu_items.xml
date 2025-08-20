@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="action_playstation_dashboard" model="ir.actions.client">
+            <field name="name">Gaming Hub Dashboard</field>
+            <field name="tag">playstation_dashboard</field>
+            <field name="target">current</field>
+        </record>
+
+        <!-- This Menu Item must have a parent and an action -->
+        <menuitem id="playstation_root_menu" name="Gaming Hub" web_icon="gaming_app,static/description/icon.png">
+            <menuitem id="playstation_dashboard_menu" name="Dashboard" sequence="1" action="action_playstation_dashboard"/>
+            <menuitem id="session_menu" name="Sessions" action="session_action" sequence="10"/>
+            <menuitem id="cafe_menu" name="Cafe" action="cafe_order_action" sequence="15"/>
+            <menuitem id="reporting" name="Reporting" sequence="20"/>
+            <menuitem id="playstation_configuration_menu" name="Configuration" sequence="25"/>
+        </menuitem>
+
+        <menuitem id="room_config_menu" name="Room Config" parent="playstation_configuration_menu">
+            <menuitem id="room_type_menu" name="Room Type" action="room_type_action"/>
+            <menuitem id="room_name_menu" name="Room Name" action="room_name_action"/>
+        </menuitem>
+
+        <menuitem id="individuals_config_menu" name="Individuals Config" parent="playstation_configuration_menu">
+            <menuitem id="console_type_menu" name="Console Type" action="console_type_action" sequence="10"/>
+            <menuitem id="console_number_menu" name="Console Num." action="console_number_action" sequence="11"/>
+            <menuitem id="tables_type_menu" name="Tables Type" action="table_type_action" sequence="12"/>
+            <menuitem id="tables_num_menu" name="Tables Num." action="table_num_action" sequence="13"/>
+        </menuitem>
+
+        <menuitem id="cafe_config_menu" name="Cafe Config" parent="playstation_configuration_menu">
+            <menuitem id="cafe_table_num_menu" name="Cafe Tables" action="cafe_table_number_action"/>
+        </menuitem>
+
+    </data>
+</odoo>

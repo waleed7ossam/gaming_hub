@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="room_type_view_list" model="ir.ui.view">
+            <field name="name">room_type_view_list</field>
+            <field name="model">room.type</field>
+            <field name="arch" type="xml">
+                <list editable="bottom">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="price_per_hour"/>
+                </list>
+            </field>
+        </record>
+
+
+        <record id="room_type_action" model="ir.actions.act_window">
+            <field name="name">Room Type</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">room.type</field>
+            <field name="view_mode">list</field>
+        </record>
+
+    </data>
+</odoo>

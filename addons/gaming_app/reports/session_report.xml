@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Session Report Tree View -->
+    <record id="view_session_report_list" model="ir.ui.view">
+        <field name="name">session.report.list</field>
+        <field name="model">session.report</field>
+        <field name="arch" type="xml">
+            <list string="Session Analysis" create="false" edit="false" delete="false">
+                <field name="date"/>
+                <field name="ref"/>
+                <field name="partner_id"/>
+                <field name="session_type"/>
+                <field name="individual_type"/>
+                <field name="state"/>
+                <field name="payment_status"/>
+                <field name="spent_hours" sum="Total Hours"/>
+                <field name="time_price" sum="Time Revenue"/>
+                <field name="products_total" sum="Products Revenue"/>
+                <field name="total" sum="Total Revenue"/>
+                <field name="currency_id" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Session Report Search View -->
+    <record id="view_session_report_search" model="ir.ui.view">
+        <field name="name">session.report.search</field>
+        <field name="model">session.report</field>
+        <field name="arch" type="xml">
+            <search string="Session Analysis">
+                <!-- Filters -->
+                <field name="date"/>
+                <field name="partner_id"/>
+                <field name="session_type"/>
+                <field name="individual_type"/>
+                <field name="state"/>
+                <field name="payment_status"/>
+                <field name="room_id"/>
+                <field name="console_id"/>
+                <field name="table_id"/>
+
+                <separator/>
+
+                <!-- Quick Filters -->
+                <filter name="today" string="Today"
+                        domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="this_week" string="This Week"
+                        domain="[('date', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d'))]"/>
+                <filter name="this_month" string="This Month"
+                        domain="[('date', '&gt;=', context_today().strftime('%Y-%m-01'))]"/>
+                <filter name="this_year" string="This Year"
+                        domain="[('date', '&gt;=', context_today().strftime('%Y-01-01'))]"/>
+
+                <separator/>
+
+                <filter name="private_sessions" string="Private Sessions"
+                        domain="[('session_type', '=', 'private')]"/>
+                <filter name="public_sessions" string="Public Sessions"
+                        domain="[('session_type', '=', 'public')]"/>
+                <filter name="console_sessions" string="Console Sessions"
+                        domain="[('individual_type', '=', 'console')]"/>
+                <filter name="table_sessions" string="Table Sessions"
+                        domain="[('individual_type', '=', 'table')]"/>
+
+                <separator/>
+
+                <filter name="finished_sessions" string="Finished Sessions"
+                        domain="[('state', '=', 'finished')]"/>
+                <filter name="running_sessions" string="Running Sessions"
+                        domain="[('state', '=', 'running')]"/>
+                <filter name="reserved_sessions" string="Reserved Sessions"
+                        domain="[('state', '=', 'reserved')]"/>
+
+                <separator/>
+
+                <filter name="paid_sessions" string="Paid Sessions"
+                        domain="[('payment_status', '=', 'paid')]"/>
+                <filter name="unpaid_sessions" string="Unpaid Sessions"
+                        domain="[('payment_status', 'in', ['not_paid', 'draft'])]"/>
+                <filter name="partial_sessions" string="Partially Paid"
+                        domain="[('payment_status', '=', 'partial')]"/>
+
+                <!-- Group By -->
+                <group expand="1" string="Group By">
+                    <filter name="group_by_date" string="Date"
+                            context="{'group_by': 'date'}"/>
+                    <filter name="group_by_month" string="Month"
+                            context="{'group_by': 'month'}"/>
+                    <filter name="group_by_year" string="Year"
+                            context="{'group_by': 'year'}"/>
+                    <filter name="group_by_quarter" string="Quarter"
+                            context="{'group_by': 'quarter'}"/>
+                </group>
+
+                <group expand="0" string="Session Details">
+                    <filter name="group_by_session_type" string="Session Type"
+                            context="{'group_by': 'session_type'}"/>
+                    <filter name="group_by_individual_type" string="Individual Type"
+                            context="{'group_by': 'individual_type'}"/>
+                    <filter name="group_by_state" string="State"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="group_by_payment_status" string="Payment Status"
+                            context="{'group_by': 'payment_status'}"/>
+                </group>
+
+                <group expand="0" string="Resources">
+                    <filter name="group_by_room_type" string="Room Type"
+                            context="{'group_by': 'room_type_id'}"/>
+                    <filter name="group_by_console_type" string="Console Type"
+                            context="{'group_by': 'console_type_id'}"/>
+                    <filter name="group_by_table_type" string="Table Type"
+                            context="{'group_by': 'table_type_id'}"/>
+                    <filter name="group_by_partner" string="Customer"
+                            context="{'group_by': 'partner_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Session Report Pivot View -->
+    <record id="view_session_report_pivot" model="ir.ui.view">
+        <field name="name">session.report.pivot</field>
+        <field name="model">session.report</field>
+        <field name="arch" type="xml">
+            <pivot string="Session Analysis" sample="1">
+                <!-- Default Row Grouping -->
+                <field name="session_type" type="row"/>
+
+                <!-- Default Column Grouping -->
+                <field name="month" type="col"/>
+
+                <!-- Measures -->
+                <field name="session_count" type="measure"/>
+                <field name="spent_hours" type="measure"/>
+                <field name="time_price" type="measure"/>
+                <field name="products_total" type="measure"/>
+                <field name="total_revenue" type="measure"/>
+                <field name="avg_session_duration" type="measure"/>
+                <field name="revenue_per_hour" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Session Report Graph View -->
+    <record id="view_session_report_graph" model="ir.ui.view">
+        <field name="name">session.report.graph</field>
+        <field name="model">session.report</field>
+        <field name="arch" type="xml">
+            <graph string="Session Analysis" sample="1" type="bar">
+                <field name="month"/>
+                <field name="total_revenue" type="measure"/>
+                <field name="session_count" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Session Report Action -->
+    <record id="action_session_report" model="ir.actions.act_window">
+        <field name="name">Session Analysis</field>
+        <field name="res_model">session.report</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                                      (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_session_report_pivot')}),
+                                      (0, 0, {'view_mode': 'graph', 'view_id': ref('view_session_report_graph')}),
+                                      (0, 0, {'view_mode': 'list', 'view_id': ref('view_session_report_list')})]"/>
+        <field name="search_view_id" ref="view_session_report_search"/>
+        <field name="context">{
+            'search_default_this_month': 1,
+            'search_default_group_by_session_type': 1,
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first session to see the analysis!
+            </p>
+            <p>
+                This report provides comprehensive analysis of your gaming sessions including revenue,
+                time spent, resource utilization, and payment status.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_session_report"
+              name="Sessions Analysis"
+              parent="reporting"
+              action="action_session_report"
+              sequence="10"/>
+
+</odoo>
+

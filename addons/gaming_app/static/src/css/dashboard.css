@@ -1,0 +1,471 @@
+/* ===== Complete Odoo Dashboard Scrolling Fix ===== */
+
+/* Force Odoo body containers to allow scrolling */
+body.o_web_client {
+    overflow: auto !important;
+    height: auto !important;
+    max-height: none !important;
+}
+
+.o_content, .o_main_content {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+}
+
+.o_action_manager, .o_view_controller {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+}
+
+/* Dashboard specific fixes */
+.dashboard-wrapper {
+    padding: 20px;
+    background-color: #f8f9fa;
+    /* Critical: Don't constrain height */
+    height: auto !important;
+    max-height: none !important;
+    min-height: calc(100vh - 40px);
+    overflow: visible !important;
+    position: relative;
+    /* Force document flow */
+    display: block;
+}
+
+.dashboard-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+    position: relative;
+    /* Ensure full height calculation */
+    height: auto !important;
+    min-height: fit-content;
+    overflow: visible;
+}
+
+.dashboard-header {
+    text-align: center;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 1;
+}
+
+.dashboard-header h1 {
+    color: #2c3e50;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.dashboard-header h1 i {
+    color: #3498db;
+    margin-right: 15px;
+}
+
+.dashboard-header p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+    width: 100%;
+    position: relative;
+    /* Force proper height calculation */
+    height: auto;
+    min-height: fit-content;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+    height: auto;
+    min-height: 120px;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    color: #7f8c8d;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.stat-icon i {
+    font-size: 24px;
+    color: white;
+}
+
+.stat-icon.sessions {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+}
+.stat-icon.revenue {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+.stat-icon.active {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+.stat-icon.orders {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+    width: 100%;
+    /* Critical for proper height */
+    height: auto;
+    min-height: 400px;
+    position: relative;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        grid-template-columns: 1fr;
+        min-height: 600px;
+    }
+}
+
+.chart-container {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: relative;
+    height: 400px;
+    overflow: visible;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.chart-title {
+    color: #2c3e50;
+    font-size: 1.4rem;
+    margin: 0;
+}
+
+.time-filter {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.time-filter button {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.time-filter button:hover {
+    background: #f8f9fa;
+}
+
+.time-filter button.active {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.loading-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.activity-feed {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.activity-feed h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding-right: 10px; /* Space for scrollbar */
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+    flex-shrink: 0;
+}
+
+.activity-item:hover {
+    background: #f8f9fa;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.activity-icon i {
+    color: white;
+    font-size: 16px;
+}
+
+.activity-icon.blue { background: #3498db; }
+.activity-icon.green { background: #2ecc71; }
+.activity-icon.orange { background: #f39c12; }
+.activity-icon.red { background: #e74c3c; }
+
+.activity-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.activity-title {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 2px;
+}
+
+.activity-time {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+}
+
+.resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+    width: 100%;
+    /* Force proper height calculation */
+    height: auto;
+    min-height: fit-content;
+}
+
+.resource-section {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    height: auto;
+    min-height: 200px;
+}
+
+.resource-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.resource-header i {
+    color: #3498db;
+    font-size: 18px;
+}
+
+.resource-title {
+    color: #2c3e50;
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.resource-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 250px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 5px;
+}
+
+.resource-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    border-radius: 8px;
+    background: #f8f9fa;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.resource-item:hover {
+    background: #e9ecef;
+}
+
+.resource-name {
+    font-weight: 500;
+    color: #2c3e50;
+    flex: 1;
+    min-width: 0;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.status-badge.status-available {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-badge.status-occupied {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.quick-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 50px; /* Extra bottom margin */
+    padding-bottom: 30px; /* Ensure spacing */
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    background: #2980b9;
+    transform: translateY(-1px);
+}
+
+.action-btn i {
+    font-size: 16px;
+}
+
+.clickable-btn {
+    cursor: pointer;
+}
+
+.disabled-btn {
+    pointer-events: none;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Force scrollbar to appear when needed */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+}
+
+/* Critical: Override any Odoo height constraints */
+@media (min-width: 769px) {
+    .o_content {
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+
+    .dashboard-wrapper {
+        min-height: 100vh !important;
+        height: auto !important;
+    }
+}

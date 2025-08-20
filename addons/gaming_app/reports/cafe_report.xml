@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Cafe Order Report Tree View -->
+    <record id="view_cafe_report_list" model="ir.ui.view">
+        <field name="name">cafe.report.list</field>
+        <field name="model">cafe.report</field>
+        <field name="arch" type="xml">
+            <list string="Cafe Analysis" create="false" edit="false" delete="false">
+                <field name="date"/>
+                <field name="ref"/>
+                <field name="partner_id"/>
+                <field name="table_num"/>
+                <field name="state"/>
+                <field name="payment_status"/>
+                <field name="product_count" sum="Total Products"/>
+                <field name="total_quantity" sum="Total Quantity"/>
+                <field name="total_discount" sum="Total Discount"/>
+                <field name="total" sum="Total Revenue"/>
+                <field name="currency_id" invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Cafe Order Report Search View -->
+    <record id="view_cafe_report_search" model="ir.ui.view">
+        <field name="name">cafe.report.search</field>
+        <field name="model">cafe.report</field>
+        <field name="arch" type="xml">
+            <search string="Cafe Analysis">
+                <!-- Filters -->
+                <field name="date"/>
+                <field name="partner_id"/>
+                <field name="ref"/>
+                <field name="state"/>
+                <field name="payment_status"/>
+                <field name="table_id"/>
+                <field name="table_num"/>
+
+                <separator/>
+
+                <!-- Quick Filters -->
+                <filter name="today" string="Today"
+                        domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="this_week" string="This Week"
+                        domain="[('date', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d'))]"/>
+                <filter name="this_month" string="This Month"
+                        domain="[('date', '&gt;=', context_today().strftime('%Y-%m-01'))]"/>
+                <filter name="this_year" string="This Year"
+                        domain="[('date', '&gt;=', context_today().strftime('%Y-01-01'))]"/>
+
+                <separator/>
+
+                <filter name="available_orders" string="Available Orders"
+                        domain="[('state', '=', 'available')]"/>
+                <filter name="running_orders" string="Running Orders"
+                        domain="[('state', '=', 'running')]"/>
+                <filter name="finished_orders" string="Finished Orders"
+                        domain="[('state', '=', 'finished')]"/>
+
+                <separator/>
+
+                <filter name="paid_orders" string="Paid Orders"
+                        domain="[('payment_status', '=', 'paid')]"/>
+                <filter name="unpaid_orders" string="Unpaid Orders"
+                        domain="[('payment_status', 'in', ['not_paid', 'draft'])]"/>
+                <filter name="partial_orders" string="Partially Paid"
+                        domain="[('payment_status', '=', 'partial')]"/>
+                <filter name="in_payment_orders" string="In Payment"
+                        domain="[('payment_status', '=', 'in_payment')]"/>
+
+                <separator/>
+
+                <filter name="has_discount" string="With Discount"
+                        domain="[('total_discount', '>', 0)]"/>
+                <filter name="no_discount" string="Without Discount"
+                        domain="[('total_discount', '=', 0)]"/>
+
+                <!-- Group By -->
+                <group expand="1" string="Group By">
+                    <filter name="group_by_date" string="Date"
+                            context="{'group_by': 'date'}"/>
+                    <filter name="group_by_month" string="Month"
+                            context="{'group_by': 'month'}"/>
+                    <filter name="group_by_year" string="Year"
+                            context="{'group_by': 'year'}"/>
+                    <filter name="group_by_quarter" string="Quarter"
+                            context="{'group_by': 'quarter'}"/>
+                </group>
+
+                <group expand="0" string="Order Details">
+                    <filter name="group_by_state" string="State"
+                            context="{'group_by': 'state'}"/>
+                    <filter name="group_by_payment_status" string="Payment Status"
+                            context="{'group_by': 'payment_status'}"/>
+                    <filter name="group_by_partner" string="Customer"
+                            context="{'group_by': 'partner_id'}"/>
+                </group>
+
+                <group expand="0" string="Table Analysis">
+                    <filter name="group_by_table" string="Table"
+                            context="{'group_by': 'table_id'}"/>
+                    <filter name="group_by_table_num" string="Table Number"
+                            context="{'group_by': 'table_num'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Cafe Order Report Pivot View -->
+    <record id="view_cafe_report_pivot" model="ir.ui.view">
+        <field name="name">cafe.report.pivot</field>
+        <field name="model">cafe.report</field>
+        <field name="arch" type="xml">
+            <pivot string="Cafe Analysis" sample="1">
+                <!-- Default Row Grouping -->
+                <field name="state" type="row"/>
+
+                <!-- Default Column Grouping -->
+                <field name="month" type="col"/>
+
+                <!-- Measures -->
+                <field name="order_count" type="measure"/>
+                <field name="product_count" type="measure"/>
+                <field name="total_quantity" type="measure"/>
+                <field name="total_discount" type="measure"/>
+                <field name="total_revenue" type="measure"/>
+                <field name="order_value_for_avg" type="measure" string="Average Order Value"/>
+                <field name="avg_unit_price" type="measure"/>
+                <field name="items_per_order" type="measure" string="Avg Items per Order"/>
+                <field name="revenue_per_table" type="measure" string="Avg Revenue per Table"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Cafe Order Report Graph View -->
+    <record id="view_cafe_report_graph" model="ir.ui.view">
+        <field name="name">cafe.report.graph</field>
+        <field name="model">cafe.report</field>
+        <field name="arch" type="xml">
+            <graph string="Cafe Analysis" sample="1" type="bar">
+                <field name="month"/>
+                <field name="total_revenue" type="measure"/>
+                <field name="order_count" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Cafe Order Report Action -->
+    <record id="action_cafe_report" model="ir.actions.act_window">
+        <field name="name">Cafe Analysis</field>
+        <field name="res_model">cafe.report</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                                      (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_cafe_report_pivot')}),
+                                      (0, 0, {'view_mode': 'graph', 'view_id': ref('view_cafe_report_graph')}),
+                                      (0, 0, {'view_mode': 'list', 'view_id': ref('view_cafe_report_list')})]"/>
+        <field name="search_view_id" ref="view_cafe_report_search"/>
+        <field name="context">{
+            'search_default_this_month': 1,
+            'search_default_group_by_state': 1,
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first cafe order to see the analysis!
+            </p>
+            <p>
+                This report provides comprehensive analysis of your cafe orders including revenue,
+                products sold, customer behavior, table utilization, and payment status.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_cafe_report"
+              name="Cafe Analysis"
+              parent="reporting"
+              action="action_cafe_report"
+              sequence="20"/>
+
+</odoo>

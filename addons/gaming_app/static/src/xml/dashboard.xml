@@ -1,0 +1,185 @@
+<templates xml:space="preserve">
+    <t t-name="gaming_app.DashboardTemplate">
+        <div class="dashboard-wrapper">
+            <div class="dashboard-container">
+                <div class="dashboard-header">
+                    <h1><i class="fa fa-gamepad"></i> Gaming Hub Dashboard</h1>
+                    <p>Real-time monitoring and management system</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-value" t-esc="stats.total_sessions or 0"/>
+                                <div class="stat-label">Total Sessions</div>
+                            </div>
+                            <div class="stat-icon sessions">
+                                <i class="fa fa-play"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-value" t-esc="'' + formatNumber(stats.revenue or 0)"/>
+                                <div class="stat-label">Revenue</div>
+                            </div>
+                            <div class="stat-icon revenue">
+                                <i class="fa fa-dollar-sign"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-value" t-esc="stats.active_sessions or 0"/>
+                                <div class="stat-label">Active Sessions</div>
+                            </div>
+                            <div class="stat-icon active">
+                                <i class="fa fa-users"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-value" t-esc="stats.cafe_orders or 0"/>
+                                <div class="stat-label">Cafe Orders</div>
+                            </div>
+                            <div class="stat-icon orders">
+                                <i class="fa fa-coffee"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="main-content">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Revenue Analytics</h3>
+                            <div class="time-filter">
+                                <button
+                                    t-foreach="[['today', 'Today'], ['week', 'Week'], ['month', 'Month']]"
+                                    t-as="period"
+                                    t-key="period[0]"
+                                    t-att-class="'btn ' + (state.currentPeriod === period[0] ? 'active' : '')"
+                                    t-on-click="() => this.changeTimeFilter(period[0])"
+                                    t-esc="period[1]"/>
+                            </div>
+                        </div>
+                        <div t-if="state.isLoading" class="loading-spinner">
+                            <div class="spinner"></div>
+                        </div>
+                        <canvas t-ref="revenueChart" width="400" height="200"
+                                t-att-style="state.isLoading ? 'display: none' : ''"></canvas>
+                    </div>
+
+                    <div class="activity-feed">
+                        <h3 class="chart-title">Recent Activity</h3>
+                        <div class="activity-list">
+                            <div t-foreach="activities" t-as="activity" t-key="activity_index"
+                                 class="activity-item">
+                                <div t-att-class="'activity-icon ' + activity.color">
+                                    <i t-att-class="'fa ' + activity.icon"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-title" t-esc="activity.title"/>
+                                    <div class="activity-time" t-esc="getTimeAgo(activity.time)"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resources-grid">
+                    <div class="resource-section">
+                        <div class="resource-header">
+                            <i class="fa fa-door-open" aria-hidden="true"></i>
+                            <h3 class="resource-title">Private Rooms</h3>
+                        </div>
+                        <div class="resource-list">
+                            <div t-foreach="resources.rooms || []" t-as="room" t-key="room_index"
+                                 class="resource-item"  t-att-class="room.status == 'available' ? 'disabled-btn' : 'clickable-btn'" t-on-click="() => this.openSession(room.id)">
+                                <span class="resource-name" t-esc="room.name"/>
+                                <span t-att-class="'status-badge ' + getResourceStatusClass(room.status)"
+                                      t-esc="getResourceStatusText(room.status)"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="resource-section">
+                        <div class="resource-header">
+                            <i class="fa fa-gamepad"></i>
+                            <h3 class="resource-title">Gaming Consoles</h3>
+                        </div>
+                        <div class="resource-list">
+                            <div t-foreach="resources.consoles || []" t-as="device" t-key="device_index"
+                                 class="resource-item" t-att-class="device.status == 'available' ? 'disabled-btn' : 'clickable-btn'" t-on-click="() => this.openConsole(device.id)">
+                                <span class="resource-name" t-esc="device.type + ' - ' + device.name"/>
+                                <span t-att-class="'status-badge ' + getResourceStatusClass(device.status)"
+                                      t-esc="getResourceStatusText(device.status)"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="resource-section">
+                        <div class="resource-header">
+                            <i class="fa fa-table"></i>
+                            <h3 class="resource-title">Gaming Tables</h3>
+                        </div>
+                        <div class="resource-list">
+                            <div t-foreach="resources.tables || []" t-as="table" t-key="table_index"
+                                 class="resource-item" t-att-class="table.status == 'available' ? 'disabled-btn' : 'clickable-btn'" t-on-click="() => this.openTable(table.id)">
+                                <span class="resource-name" t-esc="table.type + ' - ' + table.name"/>
+                                <span t-att-class="'status-badge ' + getResourceStatusClass(table.status)"
+                                      t-esc="getResourceStatusText(table.status)"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="resource-section">
+                        <div class="resource-header">
+                            <i class="fa fa-couch"></i>
+                            <h3 class="resource-title">Cafe Tables</h3>
+                        </div>
+                        <div class="resource-list">
+                            <div t-foreach="resources.cafe_tables || []" t-as="table" t-key="table_index"
+                                 class="resource-item" t-att-class="table.status == 'available' ? 'disabled-btn' : 'clickable-btn'" t-on-click="() => this.openCafe(table.id)">
+                                <span class="resource-name" t-esc="'Cafe ' + table.name"/>
+                                <span t-att-class="'status-badge ' + getResourceStatusClass(table.status)"
+                                      t-esc="getResourceStatusText(table.status)"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <button class="action-btn" t-on-click="openNewRoom">
+                        <i class="fa fa-plus"></i>
+                        New Room
+                    </button>
+                    <button class="action-btn" t-on-click="openNewConsole">
+                        <i class="fa fa-plus"></i>
+                        New Console
+                    </button>
+                    <button class="action-btn" t-on-click="openNewTable">
+                        <i class="fa fa-plus"></i>
+                        New Table
+                    </button>
+                    <button class="action-btn" t-on-click="openNewCafeOrder">
+                        <i class="fa fa-coffee"></i>
+                        New Cafe Order
+                    </button>
+                    <button class="action-btn" t-on-click="getViewReports">
+                        <i class="fa fa-chart-bar"></i>
+                        View Reports
+                    </button>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

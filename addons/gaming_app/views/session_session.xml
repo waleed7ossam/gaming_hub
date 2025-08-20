@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="session_view_list" model="ir.ui.view">
+            <field name="name">session_view_list</field>
+            <field name="model">session.session</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="ref"/>
+                    <field name="session_type"/>
+                    <field name="individual_type" column_invisible="True"/>
+                    <field name="partner_id"/>
+                    <field name="state" widget="badge"
+                           decoration-danger="state == 'running'"
+                           decoration-muted="state == 'finished'"
+                           decoration-primary="state == 'available'"/>
+                    <field name="payment_status" widget="badge"
+                           decoration-danger="payment_status == 'not_paid'"
+                           decoration-warning="payment_status == 'partial'"
+                           decoration-success="payment_status == 'paid'"/>
+                    <field name="spent_time" sum="Total"/>
+                    <field name="time_price" sum="Total" context="{'default_currency_id': currency_id}"/>
+                    <field name="total" sum="Total" context="{'default_currency_id': currency_id}"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="session_view_form" model="ir.ui.view">
+            <field name="name">session_view_form</field>
+            <field name="model">session.session</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="action_running" type="object" class="btn-primary" string="Set To Running"
+                                invisible="state != 'available'"/>
+                        <button name="action_finished" type="object" class="btn-primary" string="Set To Finished"
+                                invisible="state != 'running'"/>
+                        <button name="action_create_invoice" type="object" class="btn-primary" string="Create Invoice"
+                                invisible="state != 'finished' or payment_status == 'paid'"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <widget name="web_ribbon" title="Paid" bg_color="text-bg-success"
+                                invisible="payment_status != 'paid'"/>
+                        <widget name="web_ribbon" title="Partially Paid" bg_color="text-bg-warning"
+                                invisible="payment_status != 'partial'"/>
+                        <widget name="web_ribbon" title="Not Paid" bg_color="text-bg-danger"
+                                invisible="payment_status != 'not_paid'"/>
+                        <div name="button_box" class="oe_button_box">
+                            <button name="action_view_invoice" type="object" icon="fa-pencil-square-o"
+                                    invisible="not move_ids">
+                                <div class="o_form_field o_stat_info">
+                                    <span class="o_stat_text">Invoice</span>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="oe_titles">
+                            <label for="ref"/>
+                            <h1>
+                                <field name="ref"/>
+                            </h1>
+                        </div>
+                        <group col="2">
+                            <group>
+                                <field name="session_type" widget="radio" options="{'horizontal':True}" readonly="state != 'available'"/>
+                                <field name="individual_type" widget="radio" options="{'horizontal':True}"
+                                       invisible="session_type != 'public'" required="session_type == 'public'" readonly="state != 'available'"/>
+                                <field name="room_id" invisible="session_type != 'private'"
+                                       required="session_type == 'private'" readonly="state != 'available'"/>
+                                <field name="console_id"
+                                       invisible="session_type != 'public' or individual_type != 'console'"
+                                       required="individual_type == 'console'" readonly="state != 'available'"/>
+                                <field name="table_id"
+                                       invisible="session_type != 'public' or individual_type != 'table'"
+                                       required="individual_type == 'table'" readonly="state != 'available'"/>
+                                <field name="room_type_id" invisible="session_type != 'private'"/>
+                                <field name="console_type_id"
+                                       invisible="session_type != 'public' or individual_type != 'console'"/>
+                                <field name="table_type_id"
+                                       invisible="session_type != 'public' or individual_type != 'table'"/>
+                                <field name="partner_id" readonly="state != 'available'"/>
+                                <field name="payment_status" invisible="True"/>
+                            </group>
+                            <group>
+                                <field name="starting_time"/>
+                                <field name="ending_time"/>
+                                <field name="spent_time"/>
+                                <field name="time_price" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="currency_id" invisible="True"/>
+                                <field name="unavailable_rooms_ids" widget="many2many_tags" invisible="True"/>
+                                <field name="unavailable_consoles_ids" widget="many2many_tags" invisible="True"/>
+                                <field name="unavailable_table_ids" widget="many2many_tags" invisible="True"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page name="session_lines" string="Services">
+                                <field name="session_line_ids" readonly="state == 'finished'">
+                                    <list editable="bottom">
+                                        <field name="product_id"/>
+                                        <field name="product_template_id" optional="hide"/>
+                                        <field name="product_uom_qty"/>
+                                        <field name="price_unit"/>
+                                        <field name="discount"/>
+                                        <field name="discount_excluded" optional="hide"/>
+                                        <field name="discount_included"/>
+                                    </list>
+                                </field>
+                                <group name="note_group" col="6" class="mt-2 mt-md-0">
+                                    <group class="oe_subtotal_footer d-flex align-items-center gap-2" name="session_total">
+                                        <field name="total" readonly="1" widget="monetary"
+                                               options="{'currency_field': 'currency_id'}"
+                                               style="font-size: 19px; font-weight: bold; color: #000;"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="session_action" model="ir.actions.act_window">
+            <field name="name">Sessions</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">session.session</field>
+            <field name="view_mode">list,form</field>
+        </record>
+
+    </data>
+</odoo>

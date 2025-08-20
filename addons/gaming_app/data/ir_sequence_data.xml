@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <record id="seq_room_session" model="ir.sequence">
+            <field name="name">Room</field>
+            <field name="code">seq_room_session</field>
+            <field name="prefix">R/%(day)s-%(month)s/</field>
+            <field name="padding">3</field>
+        </record>
+
+        <record id="seq_console_session" model="ir.sequence">
+            <field name="name">Console</field>
+            <field name="code">seq_console_session</field>
+            <field name="prefix">CON/%(day)s-%(month)s/</field>
+            <field name="padding">3</field>
+        </record>
+
+        <record id="seq_table_session" model="ir.sequence">
+            <field name="name">Table</field>
+            <field name="code">seq_table_session</field>
+            <field name="prefix">TAB/%(day)s-%(month)s/</field>
+            <field name="padding">3</field>
+        </record>
+
+
+        <record id="seq_cafe_order" model="ir.sequence">
+            <field name="name">Table</field>
+            <field name="code">seq_cafe_order</field>
+            <field name="prefix">CAF/%(day)s-%(month)s/</field>
+            <field name="padding">3</field>
+        </record>
+
+</odoo>
